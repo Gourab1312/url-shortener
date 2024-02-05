@@ -97,13 +97,40 @@ export default function Home({ urlList }) {
   );
 }
 
-export async function getServerSideProps({ req }) {
+// export async function getServerSideProps({ req }) {
+//   try {
+//     const baseUrl = req ? `${req.protocol}://${req.get("Host")}` : "";
+//     const apiUrl = `${baseUrl}/api/url`;
+
+//     const res = await fetch(apiUrl);
+
+//     if (!res.ok) {
+//       throw new Error("Failed to fetch URL list");
+//     }
+
+//     const urlList = await res.json();
+
+//     return {
+//       props: {
+//         urlList,
+//       },
+//     };
+//   } catch (error) {
+//     console.error("Error:", error);
+//     // Handle fetch error or set an error state
+//     return {
+//       props: {
+//         urlList: [],
+//       },
+//     };
+//   }
+// }
+
+export async function getServerSideProps() {
   try {
-    const baseUrl = req ? `${req.protocol}://${req.get("Host")}` : "";
-    const apiUrl = `${baseUrl}/api/url`;
-
-    const res = await fetch(apiUrl);
-
+    const res = await fetch(
+      "https://url-shortener-smoky-two.vercel.app/api/url"
+    );
     if (!res.ok) {
       throw new Error("Failed to fetch URL list");
     }
