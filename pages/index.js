@@ -97,9 +97,13 @@ export default function Home({ urlList }) {
   );
 }
 
-export async function getServerSideProps() {
+export async function getServerSideProps({ req }) {
   try {
-    const res = await fetch("http://localhost:3000/api/url");
+    const baseUrl = req ? `${req.protocol}://${req.get("Host")}` : "";
+    const apiUrl = `${baseUrl}/api/url`;
+
+    const res = await fetch(apiUrl);
+
     if (!res.ok) {
       throw new Error("Failed to fetch URL list");
     }
