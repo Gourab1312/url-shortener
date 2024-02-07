@@ -5,9 +5,28 @@ import "bootstrap/dist/css/bootstrap.min.css";
 export default function Home({ urlList }) {
   const [data, setData] = useState(urlList);
   const [newUrl, setNewUrl] = useState("");
+  const [isActiveButton, setIsActiveButton] = useState(true);
+  const [validUrl, setValidUrl] = useState(true);
+
+  const isValidUrl = (url) => {
+    const urlRegex = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?$/;
+    return urlRegex.test(url);
+  };
 
   const handleOnSubmit = async (e) => {
     e.preventDefault();
+
+    if (newUrl.trim() === "") {
+      setIsActiveButton(false);
+      return;
+    } else {
+      setIsActiveButton(true);
+    }
+
+    if (!isValidUrl(newUrl)) {
+      setValidUrl(false);
+      return;
+    }
 
     try {
       const response = await fetch("/api/url", {
@@ -47,10 +66,22 @@ export default function Home({ urlList }) {
               value={newUrl}
               onChange={(e) => setNewUrl(e.target.value)}
             />
-            <button type="submit" className="btn btn-dark mx-2">
+            <button
+              type="submit"
+              className={`${
+                !isActiveButton && "opacity-50 cursor-none"
+              } btn btn-dark mx-2`}
+            >
               Create Short Url
             </button>
           </form>
+          {!isActiveButton && (
+            <p className="mt-3 text-red">Please enter url!</p>
+          )}
+
+          {!validUrl && (
+            <p className="mt-3 text-red">Please enter a valid url!</p>
+          )}
 
           <div className="table-responsive custom-table-responsive">
             <table className="table custom-table">
@@ -96,35 +127,6 @@ export default function Home({ urlList }) {
     </>
   );
 }
-
-// export async function getServerSideProps({ req }) {
-//   try {
-//     const baseUrl = req ? `${req.protocol}://${req.get("Host")}` : "";
-//     const apiUrl = `${baseUrl}/api/url`;
-
-//     const res = await fetch(apiUrl);
-
-//     if (!res.ok) {
-//       throw new Error("Failed to fetch URL list");
-//     }
-
-//     const urlList = await res.json();
-
-//     return {
-//       props: {
-//         urlList,
-//       },
-//     };
-//   } catch (error) {
-//     console.error("Error:", error);
-//     // Handle fetch error or set an error state
-//     return {
-//       props: {
-//         urlList: [],
-//       },
-//     };
-//   }
-// }
 
 export async function getServerSideProps() {
   try {
